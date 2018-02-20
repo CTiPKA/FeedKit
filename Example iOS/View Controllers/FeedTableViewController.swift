@@ -25,18 +25,38 @@
 import UIKit
 import FeedKit
 
-let feedURL = URL(string: "http://images.apple.com/main/rss/hotnews/hotnews.rss")!
+//let feedURL = URL(string: "http://images.apple.com/main/rss/hotnews/hotnews.rss")!
+let feedURL = URL(string: "http://letknow.news/xml/app.html")!
 
 class FeedTableViewController: UITableViewController {
     
     var feed: RSSFeed?
     
-    let parser = FeedParser(URL: feedURL)!
+    var parser: FeedParser?
+//    let parser = FeedParser(URL: feedURL)!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.title = "Feed"
+        
+        do {
+            //replace page content to fit RSS requerements. Replacing opening and closing tag <app> to <rss> and <channel>
+            let contents = try String(contentsOf: feedURL)
+                .replacingOccurrences(of: "<app>", with: "<rss><channel>")
+                .replacingOccurrences(of: "</app>", with: "</channel></rss>")
+            if let data = contents.data(using: .utf8) {
+                parser = FeedParser(data: data)
+            }
+        } catch {
+            // contents could not be loaded
+            print("Unable to load data: \(error)")
+        }
+        
+        guard let parser = self.parser else {
+            NSLog("Parser not initialized.")
+            return
+        }
         
         // Parse asynchronously, not to block the UI.
         parser.parseAsync { [weak self] (result) in
@@ -76,7 +96,10 @@ extension FeedTableViewController {
         case .title:        cell.textLabel?.text = self.feed?.title ?? "[no title]"
         case .link:         cell.textLabel?.text = self.feed?.link ?? "[no link]"
         case .description:  cell.textLabel?.text = self.feed?.description ?? "[no description]"
-        case .items:        cell.textLabel?.text = self.feed?.items?[indexPath.row].title ?? "[no title]"
+        case .items:
+            cell.textLabel?.text = self.feed?.items?[indexPath.row].title ?? "[no title]"
+            NSLog ("enclosure: \(self.feed?.items?[indexPath.row].enclosure?.attributes?.url ?? "")")
+            NSLog ("enclosureFull: \(self.feed?.items?[indexPath.row].enclosureFull?.attributes?.url ?? "")")
         }
         return cell
     }

@@ -116,6 +116,9 @@ public class RSSFeedItem {
     /// length="12216320" type="audio/mpeg" />
     public var enclosure: RSSFeedItemEnclosure?
     
+    //enclosure full field
+    public var enclosureFull: RSSFeedItemEnclosure?
+    
     /// A string that uniquely identifies the item.
     /// 
     /// Example: http://inessential.com/2002/09/01.php#a2
@@ -207,6 +210,7 @@ extension RSSFeedItem: Equatable {
             lhs.description == rhs.description &&
             lhs.dublinCore == rhs.dublinCore &&
             lhs.enclosure == rhs.enclosure &&
+                lhs.enclosureFull == rhs.enclosureFull &&
             lhs.guid == rhs.guid &&
             lhs.iTunes == rhs.iTunes &&
             lhs.media == rhs.media &&

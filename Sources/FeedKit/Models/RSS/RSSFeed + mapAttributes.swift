@@ -95,7 +95,13 @@ extension RSSFeed {
             if  self.items?.last?.enclosure == nil {
                 self.items?.last?.enclosure = RSSFeedItemEnclosure(attributes: attributes)
             }
-
+            
+        case .rssChannelItemEnclosureFull:
+            
+            if  self.items?.last?.enclosureFull == nil {
+                self.items?.last?.enclosureFull = RSSFeedItemEnclosure(attributes: attributes)
+            }
+            
         case .rssChannelItemGUID:
 
             if  self.items?.last?.guid == nil {
